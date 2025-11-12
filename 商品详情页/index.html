@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center">
+                <button onclick="goBack()" class="text-gray-600 mr-4">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-800">商品详情</h1>
+            </div>
+            <div class="relative">
+                <a href="../购物车/index.html" class="text-gray-700">
+                    <i class="fa fa-shopping-cart text-2xl"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6 pb-24">
+        <!-- 商品详情 -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <!-- 商品图片和信息并排布局 -->
+            <div class="product-detail-container">
+                <!-- 商品图片区域 -->
+                <div class="product-image-section">
+                    <div class="product-image-wrapper">
+                        <img id="main-image" src="./images/初音未来.jpg" alt="商品图片" class="rounded-lg shadow-md transition-transform duration-300 hover:scale-105">
+                        <div class="absolute top-4 right-4">
+                            <button id="favorite-btn" class="bg-white rounded-full p-2 shadow-md hover:bg-pink-50 transition-colors">
+                                <i class="fa fa-heart text-gray-400"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商品信息 -->
+                <div class="product-info-section">
+                <h1 id="product-name" class="text-2xl font-bold text-gray-800 mb-2">商品名称</h1>
+                <p id="product-description" class="text-gray-600 mb-4">商品描述信息</p>
+                
+                <!-- 价格信息 -->
+                <div class="flex items-center mb-4">
+                    <span id="current-price" class="text-2xl font-bold text-pink-500 mr-2">¥0</span>
+                    <span id="original-price" class="text-gray-500 line-through">¥0</span>
+                    <span id="discount-tag" class="ml-2 bg-pink-100 text-pink-600 text-sm px-2 py-0.5 rounded">折扣</span>
+                </div>
+                
+                <!-- 倒计时 -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+                    <div class="flex items-center">
+                        <i class="fa fa-clock text-yellow-500 mr-2"></i>
+                        <span class="text-gray-700">限时优惠：</span>
+                        <span id="countdown" class="countdown-timer text-pink-500 font-bold ml-1">02:15:30</span>
+                    </div>
+                </div>
+                
+                <!-- 商品属性选择 -->
+                <div class="mb-6">
+                    <h3 class="font-medium text-gray-800 mb-2">款式</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button class="px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:border-pink-500 hover:text-pink-500">默认款</button>
+                    </div>
+                    
+                    <h3 class="font-medium text-gray-800 mb-2">尺寸</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:border-pink-500 hover:text-pink-500">标准尺寸</button>
+                    </div>
+                </div>
+                
+                <!-- 数量选择 -->
+                <div class="flex items-center justify-between mb-6">
+                    <span class="font-medium text-gray-800">数量</span>
+                    <div class="flex items-center">
+                        <button id="decrease-qty" class="quantity-btn w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">
+                            <i class="fa fa-minus text-gray-500"></i>
+                        </button>
+                        <span id="quantity-display" class="mx-4 text-gray-700">1</span>
+                        <button id="increase-qty" class="quantity-btn w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">
+                            <i class="fa fa-plus text-gray-500"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="flex space-x-4">
+                    <button id="add-to-cart" class="add-to-cart-btn flex-1 action-btn flex items-center justify-center">
+                        <i class="fa fa-shopping-cart mr-2"></i>加入购物车
+                    </button>
+                    <button id="buy-now" class="flex-1 action-btn">
+                        立即购买
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 商品详情tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="flex border-b border-gray-200">
+                <button class="tab-button flex-1 py-4 text-center font-medium text-pink-500 border-b-2 border-pink-500">商品详情</button>
+                <button class="tab-button flex-1 py-4 text-center font-medium text-gray-500">评价</button>
+            </div>
+            <div class="p-6">
+                <div class="prose max-w-none">
+                    <p id="product-detail-description">商品详细描述信息将在这里显示。</p>
+                    <br>
+                    <p>产品特点：</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>高品质材料制作，经久耐用</li>
+                        <li>精细工艺处理，细节丰富</li>
+                        <li>正版授权商品，品质保证</li>
+                        <li>精美包装设计，适合收藏和送礼</li>
+                        <li>符合相关安全标准，使用放心</li>
+                    </ul>
+                    <br>
+                    <p>注意事项：</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>请避免阳光直射，以防褪色</li>
+                        <li>请勿放置在高温潮湿环境中</li>
+                        <li>请勿让儿童玩耍，以免发生意外</li>
+                        <li>如有质量问题，请在签收后7天内联系客服</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 相关推荐 -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">相关推荐</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <img src="./images/初音未来.jpg" alt="推荐商品1" class="w-full h-32 object-cover">
+                        <div class="p-3">
+                            <h3 class="font-medium text-gray-800 text-sm mb-1">相关商品A</h3>
+                            <p class="text-pink-500 font-bold">¥99</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <img src="./images/七海阿萨.jpg" alt="推荐商品2" class="w-full h-32 object-cover">
+                        <div class="p-3">
+                            <h3 class="font-medium text-gray-800 text-sm mb-1">相关商品B</h3>
+                            <p class="text-pink-500 font-bold">¥129</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 加入购物车成功提示 -->
+    <div id="cart-toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all duration-300 opacity-0 z-50">
+        <div class="flex items-center">
+            <i class="fa fa-check-circle mr-2"></i>
+            <span>已成功加入购物车</span>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+        <div class="container mx-auto flex justify-around">
+            <a href="../商城首页/index.html" class="flex flex-col items-center py-2 px-4 text-gray-500">
+                <i class="fa fa-home text-lg"></i>
+                <span class="text-xs mt-1">首页</span>
+            </a>
+            <!-- <a href="#" class="flex flex-col items-center py-2 px-4 text-gray-500">
+                <i class="fa fa-th-large text-lg"></i>
+                <span class="text-xs mt-1">分类</span>
+            </a> -->
+            <a href="../购物车/index.html" class="flex flex-col items-center py-2 px-4 text-gray-500">
+                <i class="fa fa-shopping-cart text-lg"></i>
+                <span class="text-xs mt-1">购物车</span>
+            </a>
+            <a href="#" class="flex flex-col items-center py-2 px-4 text-gray-500">
+                <i class="fa fa-user text-lg"></i>
+                <span class="text-xs mt-1">我的</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

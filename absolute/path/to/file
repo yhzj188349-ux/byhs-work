@@ -1,0 +1,89 @@
+/* 简化后的商品项样式 */
+.goods-item {
+    width: 234px;
+    height: 300px;
+    margin: 0 0 14px 14px;
+    background: #fff;
+    padding: 20px 0;
+    box-sizing: border-box;
+    float: left;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    border-radius: 12px;
+    opacity: 0;
+    overflow: visible; /* 允许内容溢出，确保按钮能完全显示 */
+}
+
+/* 商品项悬停效果 */
+.goods-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 简化后的添加到购物车按钮样式 */
+.add-to-cart {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10; /* 确保按钮在最上层 */
+    padding: 8px 20px;
+    background-color: #fb7299;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* 悬停时显示按钮 */
+.goods-item:hover .add-to-cart {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+/* 按钮悬停效果 */
+.add-to-cart:hover {
+    background-color: #ff5c8a;
+    transform: translateX(-50%) translateY(-7px);
+}
+
+/* 按钮点击动画 */
+.add-to-cart.clicked {
+    transform: translateX(-50%) scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+/* 商品图片样式优化 */
+.goods-img {
+    margin: 0 auto 19px;
+    background-color: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    width: 160px;
+    height: 160px;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.goods-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.goods-item:hover .goods-img {
+    transform: scale(1.05);
+}
+
+.goods-item:hover .goods-img img {
+    transform: scale(1.1);
+}

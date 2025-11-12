@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车 - B站商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .cart-item {
+                transition: all 0.3s ease;
+            }
+            .remove-btn {
+                transition: all 0.3s ease;
+            }
+            .remove-btn:hover {
+                transform: scale(1.1);
+            }
+            .quantity-btn {
+                transition: all 0.3s ease;
+            }
+            .quantity-btn:hover {
+                background-color: #f3f4f6;
+            }
+            .checkout-btn {
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .checkout-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            }
+            .empty-cart-icon {
+                animation: bounce 2s infinite;
+            }
+            @keyframes bounce {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center">
+                <button onclick="goBack()" class="text-gray-600 mr-4">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-800">购物车</h1>
+            </div>
+            <div class="relative">
+                <i class="fa fa-shopping-cart text-2xl text-gray-700"></i>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <!-- 购物车商品列表 -->
+        <div id="cart-container">
+            <!-- 购物车为空时显示 -->
+            <div id="empty-cart" class="hidden text-center py-12">
+                <div class="empty-cart-icon text-6xl text-gray-300 mb-4">
+                    <i class="fa fa-shopping-cart"></i>
+                </div>
+                <p class="text-gray-500 text-lg mb-6">购物车还是空的</p>
+                <a href="../商城首页/index.html" class="bg-pink-500 hover:bg-pink-600 text-white py-2 px-6 rounded-full font-medium">
+                    去逛逛
+                </a>
+            </div>
+
+            <!-- 购物车有商品时显示 -->
+            <div id="cart-items" class="hidden">
+                <div id="cart-items-list" class="space-y-4 mb-6">
+                    <!-- 商品项将通过JavaScript动态添加 -->
+                </div>
+
+                <!-- 结算信息 -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-gray-600">商品总额</span>
+                        <span id="total-amount" class="text-lg font-bold">¥0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-gray-600">运费</span>
+                        <span class="text-green-600">免运费</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-300">
+                        <span class="text-gray-800 font-medium">应付总额</span>
+                        <span id="final-amount" class="text-xl font-bold text-pink-500">¥0.00</span>
+                    </div>
+                    <button id="checkout-btn" class="checkout-btn w-full mt-6 bg-pink-500 hover:bg-pink-600 text-white py-3 rounded-full font-medium">
+                        去结算
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+        <div class="container mx-auto flex justify-around">
+            <a href="../商城首页/index.html" class="flex flex-col items-center py-2 px-4 text-gray-500">
+                <i class="fa fa-home text-lg"></i>
+                <span class="text-xs mt-1">首页</span>
+            </a>
+            <!-- <a href="#" class="flex flex-col items-center py-2 px-4 text-gray-500">
+                <i class="fa fa-th-large text-lg"></i>
+                <span class="text-xs mt-1">分类</span>
+            </a> -->
+            <a href="index.html" class="flex flex-col items-center py-2 px-4 text-pink-500">
+                <i class="fa fa-shopping-cart text-lg"></i>
+                <span class="text-xs mt-1">购物车</span>
+            </a>
+            <a href="#" class="flex flex-col items-center py-2 px-4 text-gray-500">
+                <i class="fa fa-user text-lg"></i>
+                <span class="text-xs mt-1">我的</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // 返回上一页
+        function goBack() {
+            window.history.back();
+        }
+
+        // 购物车商品数组
+        let cartItems = [];
+
+        // 初始化购物车
+        function initCart() {
+            loadCart();
+            renderCart();
+            updateCartCount();
+        }
+
+        // 从localStorage加载购物车数据
+        function loadCart() {
+            try {
+                const cartData = localStorage.getItem('cartItems');
+                if (cartData) {
+                    cartItems = JSON.parse(cartData);
+                    // 确保每个商品都有必要的属性
+                    cartItems = cartItems.map(item => ({
+                        id: item.id || Date.now() + Math.random(), // 为没有ID的商品生成唯一ID
+                        name: item.name || '未知商品',
+                        price: parseFloat(item.price) || 0,
+                        image: item.image || '../商品详情页/images/初音未来.jpg', // 默认图片
+                        quantity: parseInt(item.quantity) || 1
+                    }));
+                } else {
+                    cartItems = [];
+                }
+            } catch (error) {
+                console.error('解析购物车数据失败:', error);
+                cartItems = [];
+            }
+        }
+
+        // 保存购物车数据到localStorage
+        function saveCart() {
+            try {
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                updateCartCount();
+            } catch (error) {
+                console.error('保存购物车数据失败:', error);
+            }
+        }
+
+        // 更新购物车数量显示
+        function updateCartCount() {
+            try {
+                const totalQuantity = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+                
+                // 更新页面上的购物车数量显示
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = totalQuantity;
+                }
+                
+                // 更新所有页面的购物车数量显示
+                const cartCountElements = document.querySelectorAll('#cart-count, .cart-count');
+                cartCountElements.forEach(element => {
+                    element.textContent = totalQuantity;
+                });
+                
+                // 保存购物车总数量到本地存储
+                localStorage.setItem('cartCount', totalQuantity.toString());
+            } catch (error) {
+                console.error('更新购物车数量显示失败:', error);
+                // 出错时显示0
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = '0';
+                }
+                
+                const cartCountElements = document.querySelectorAll('#cart-count, .cart-count');
+                cartCountElements.forEach(element => {
+                    element.textContent = '0';
+                });
+            }
+        }
+
+        // 渲染购物车
+        function renderCart() {
+            const cartContainer = document.getElementById('cart-container');
+            const emptyCart = document.getElementById('empty-cart');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartItemsList = document.getElementById('cart-items-list');
+
+            if (cartItems.length === 0) {
+                emptyCart.classList.remove('hidden');
+                cartItemsContainer.classList.add('hidden');
+            } else {
+                emptyCart.classList.add('hidden');
+                cartItemsContainer.classList.remove('hidden');
+                
+                // 清空现有商品列表
+                cartItemsList.innerHTML = '';
+                
+                // 添加商品项
+                cartItems.forEach(item => {
+                    const itemElement = createCartItemElement(item);
+                    cartItemsList.appendChild(itemElement);
+                });
+                
+                // 更新总金额
+                updateTotalAmount();
+            }
+        }
+
+        // 创建购物车项目元素
+        function createCartItemElement(item) {
+            // 确保商品信息完整
+            const id = item.id || 'unknown-' + Date.now();
+            const name = item.name || '未知商品';
+            const price = parseFloat(item.price) || 0;
+            const image = item.image || '../商品详情页/images/初音未来.jpg';
+            const quantity = parseInt(item.quantity) || 1;
+            
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item flex items-center py-4 border-b border-gray-200';
+            cartItem.dataset.id = id;
+            
+            cartItem.innerHTML = `
+                <img src="${image}" onerror="this.src='../商品详情页/images/初音未来.jpg'" alt="${name}" class="w-20 h-20 object-cover rounded mr-4">
+                <div class="flex-1">
+                    <h3 class="font-medium text-gray-800">${name}</h3>
+                    <p class="text-pink-500 font-bold">¥${price.toFixed(2)}</p>
+                    <div class="flex items-center mt-2">
+                        <button onclick="decreaseQuantity('${id}')" class="quantity-btn w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center">
+                            <i class="fa fa-minus text-xs"></i>
+                        </button>
+                        <span class="mx-2 text-gray-700">${quantity}</span>
+                        <button onclick="increaseQuantity('${id}')" class="quantity-btn w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center">
+                            <i class="fa fa-plus text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <button onclick="removeItem('${id}')" class="remove-btn text-gray-400 hover:text-red-500">
+                    <i class="fa fa-trash"></i>
+                </button>
+            `;
+            
+            return cartItem;
+        }
+
+        // 增加商品数量
+        function increaseQuantity(itemId) {
+            const item = cartItems.find(item => item.id == itemId);
+            if (item) {
+                item.quantity++;
+                saveCart();
+                renderCart();
+            }
+        }
+
+        // 减少商品数量
+        function decreaseQuantity(itemId) {
+            const item = cartItems.find(item => item.id == itemId);
+            if (item && item.quantity > 1) {
+                item.quantity--;
+                saveCart();
+                renderCart();
+            } else if (item && item.quantity === 1) {
+                removeItem(itemId);
+            }
+        }
+
+        // 移除商品
+        function removeItem(itemId) {
+            cartItems = cartItems.filter(item => item.id != itemId);
+            saveCart();
+            renderCart();
+        }
+
+        // 更新总金额
+        function updateTotalAmount() {
+            const totalAmount = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+            document.getElementById('total-amount').textContent = `¥${totalAmount.toFixed(2)}`;
+            document.getElementById('final-amount').textContent = `¥${totalAmount.toFixed(2)}`;
+            
+            // 更新去结算按钮状态
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                if (cartItems.length > 0) {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.classList.remove('opacity-50');
+                } else {
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.classList.add('opacity-50');
+                }
+            }
+        }
+
+        // 去结算按钮点击事件
+        document.getElementById('checkout-btn').addEventListener('click', function() {
+            if (cartItems.length > 0) {
+                // 跳转到结算页面
+                window.location.href = '../结算页面/index.html';
+            }
+        });
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initCart();
+        });
+    </script>
+</body>
+</html>

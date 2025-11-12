@@ -1,0 +1,383 @@
+// 商品详情页原生JavaScript功能实现
+
+// 当前商品信息
+let currentProduct = {
+    id: 1,
+    name: 'VOCALOID 初音未来 Q版手办',
+    description: '正版授权手办，采用高品质PVC材料制作，细节精致，色彩鲜艳',
+    price: 118,
+    image: './images/初音未来.jpg'
+};
+
+// 从URL参数加载商品信息
+function loadProductFromUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // 如果URL中有参数，则更新当前商品信息
+    if (urlParams.has('id')) {
+        currentProduct.id = parseInt(urlParams.get('id')) || currentProduct.id;
+    }
+    
+    if (urlParams.has('name')) {
+        currentProduct.name = urlParams.get('name') || currentProduct.name;
+    }
+    
+    if (urlParams.has('description')) {
+        currentProduct.description = urlParams.get('description') || currentProduct.description;
+    }
+    
+    if (urlParams.has('price')) {
+        currentProduct.price = parseFloat(urlParams.get('price')) || currentProduct.price;
+    }
+    
+    if (urlParams.has('image')) {
+        currentProduct.image = urlParams.get('image') || currentProduct.image;
+    }
+}
+
+// 页面加载完成后执行
+document.addEventListener('DOMContentLoaded', function() {
+    // 从URL参数获取商品信息
+    loadProductFromUrlParams();
+    
+    // 初始化页面功能
+    initializePage();
+});
+
+// 初始化页面功能
+function initializePage() {
+    // 绑定各种事件监听器
+    bindEventListeners();
+    
+    // 更新页面商品信息
+    updateProductInfo();
+    
+    // 初始化购物车数量显示
+    updateCartCountDisplay();
+    
+    // 初始化倒计时
+    initializeCountdown();
+}
+
+// 更新页面商品信息
+function updateProductInfo() {
+    // 更新商品名称
+    const productNameElement = document.querySelector('h1.text-2xl.font-bold.text-gray-800.mb-2');
+    if (productNameElement) {
+        productNameElement.textContent = currentProduct.name;
+    }
+    
+    // 更新商品描述
+    const productDescriptionElement = document.querySelector('p.text-gray-600.mb-4');
+    if (productDescriptionElement) {
+        productDescriptionElement.textContent = currentProduct.description;
+    }
+    
+    // 更新商品价格
+    const currentPriceElement = document.querySelector('span.text-2xl.font-bold.text-pink-500.mr-2');
+    if (currentPriceElement) {
+        currentPriceElement.textContent = '¥' + currentProduct.price;
+    }
+    
+    // 更新原价
+    const originalPriceElement = document.querySelector('span.text-gray-500.line-through');
+    if (originalPriceElement) {
+        originalPriceElement.textContent = '¥' + (currentProduct.price * 1.25).toFixed(0);
+    }
+    
+    // 更新商品图片
+    const mainImageElement = document.getElementById('main-image');
+    if (mainImageElement) {
+        mainImageElement.src = currentProduct.image;
+        mainImageElement.alt = currentProduct.name;
+    }
+    
+    // 更新缩略图
+    const thumbnailImages = document.querySelectorAll('.thumbnail-image');
+    thumbnailImages.forEach(img => {
+        img.src = currentProduct.image;
+        img.alt = currentProduct.name;
+    });
+}
+
+// 绑定事件监听器
+function bindEventListeners() {
+    // 收藏按钮事件
+    const favoriteBtn = document.getElementById('favorite-btn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', toggleFavorite);
+    }
+    
+    // 数量增减按钮事件
+    const decreaseBtn = document.getElementById('decrease-qty');
+    const increaseBtn = document.getElementById('increase-qty');
+    
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', decreaseQuantity);
+    }
+    
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', increaseQuantity);
+    }
+    
+    // 加入购物车按钮事件
+    const addToCartBtn = document.getElementById('add-to-cart');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', addToCart);
+    }
+    
+    // 立即购买按钮事件
+    const buyNowBtn = document.getElementById('buy-now');
+    if (buyNowBtn) {
+        buyNowBtn.addEventListener('click', buyNow);
+    }
+    
+    // 缩略图点击事件
+    const thumbnails = document.querySelectorAll('.thumbnail-image');
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            changeImage(this);
+        });
+    });
+}
+
+// 切换收藏状态
+function toggleFavorite() {
+    const favoriteBtn = document.getElementById('favorite-btn');
+    if (favoriteBtn) {
+        favoriteBtn.classList.toggle('active');
+        favoriteBtn.classList.toggle('text-pink-500');
+    }
+}
+
+// 减少数量
+function decreaseQuantity() {
+    const quantityDisplay = document.getElementById('quantity-display');
+    let quantity = parseInt(quantityDisplay.textContent);
+    
+    if (quantity > 1) {
+        quantity--;
+        quantityDisplay.textContent = quantity;
+    }
+}
+
+// 增加数量
+function increaseQuantity() {
+    const quantityDisplay = document.getElementById('quantity-display');
+    let quantity = parseInt(quantityDisplay.textContent);
+    
+    quantity++;
+    quantityDisplay.textContent = quantity;
+}
+
+// 更改主图
+function changeImage(thumbnail) {
+    const mainImage = document.getElementById('main-image');
+    mainImage.src = thumbnail.src;
+    
+    // 更新缩略图选中状态
+    document.querySelectorAll('.thumbnail-image').forEach(img => {
+        img.classList.remove('active');
+    });
+    thumbnail.classList.add('active');
+}
+
+// 更新购物车数量显示
+function updateCartCountDisplay() {
+    try {
+        // 从本地存储获取购物车数据
+        const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const totalQuantity = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+        
+        // 更新页面上的购物车数量显示
+        const cartCountElement = document.getElementById('cart-count');
+        if (cartCountElement) {
+            cartCountElement.textContent = totalQuantity;
+        }
+        
+        // 更新所有页面的购物车数量显示
+        const cartCountElements = document.querySelectorAll('#cart-count, .cart-count');
+        cartCountElements.forEach(element => {
+            element.textContent = totalQuantity;
+        });
+        
+        // 保存购物车总数量到本地存储
+        localStorage.setItem('cartCount', totalQuantity.toString());
+    } catch (error) {
+        console.error('更新购物车数量显示失败:', error);
+        // 出错时显示0
+        const cartCountElement = document.getElementById('cart-count');
+        if (cartCountElement) {
+            cartCountElement.textContent = '0';
+        }
+        
+        const cartCountElements = document.querySelectorAll('#cart-count, .cart-count');
+        cartCountElements.forEach(element => {
+            element.textContent = '0';
+        });
+    }
+}
+
+// 添加到购物车
+        function addToCart() {
+            // 获取当前数量
+            const quantityDisplay = document.getElementById('quantity-display');
+            const quantity = parseInt(quantityDisplay.textContent);
+            
+            try {
+                // 保存商品到本地存储（模拟购物车）
+                const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+                // 使用商品ID作为唯一标识（与商城首页保持一致）
+                const existingItemIndex = cartItems.findIndex(item => item.id === currentProduct.id);
+                
+                if (existingItemIndex >= 0) {
+                    // 如果商品已存在，增加数量
+                    cartItems[existingItemIndex].quantity += quantity;
+                } else {
+                    // 如果商品不存在，添加新商品
+                    cartItems.push({
+                        id: currentProduct.id,
+                        name: currentProduct.name,
+                        description: currentProduct.description,
+                        price: currentProduct.price,
+                        image: currentProduct.image,
+                        quantity: quantity
+                    });
+                }
+                
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                
+                // 计算购物车总数量
+                const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+                
+                // 更新页面上的购物车数量显示
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = totalQuantity;
+                }
+                
+                // 更新所有页面的购物车数量显示
+                const cartCountElements = document.querySelectorAll('#cart-count, .cart-count');
+                cartCountElements.forEach(element => {
+                    element.textContent = totalQuantity;
+                });
+                
+                // 保存购物车总数量到本地存储
+                localStorage.setItem('cartCount', totalQuantity.toString());
+                
+                // 显示提示
+                const cartToast = document.getElementById('cart-toast');
+                if (cartToast) {
+                    cartToast.classList.remove('opacity-0');
+                    cartToast.classList.add('opacity-100');
+                    
+                    // 3秒后隐藏提示
+                    setTimeout(() => {
+                        cartToast.classList.remove('opacity-100');
+                        cartToast.classList.add('opacity-0');
+                    }, 3000);
+                }
+                
+                console.log(`已将 ${product.name} 添加到购物车！数量：${quantity}`);
+                updateCartCountDisplay();
+                
+                // 触发storage事件，通知其他页面更新
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'cartItems',
+                    newValue: JSON.stringify(cartItems)
+                }));
+            } catch (error) {
+                console.error('添加商品到购物车失败:', error);
+                // 显示错误提示
+                const cartToast = document.getElementById('cart-toast');
+                if (cartToast) {
+                    cartToast.innerHTML = '<div class="flex items-center"><i class="fa fa-exclamation-circle mr-2"></i><span>添加失败，请重试</span></div>';
+                    cartToast.classList.remove('opacity-0');
+                    cartToast.classList.add('opacity-100');
+                    
+                    // 3秒后隐藏提示
+                    setTimeout(() => {
+                        cartToast.classList.remove('opacity-100');
+                        cartToast.classList.add('opacity-0');
+                    }, 3000);
+                }
+            }
+        }
+
+// 立即购买
+function buyNow() {
+    // 先将商品添加到购物车
+    addToCart();
+    
+    // 跳转到结算页面
+    window.location.href = '../结算页面/index.html';
+}
+
+// 初始化倒计时
+function initializeCountdown() {
+    // 设置倒计时结束时间（当前时间+2小时）
+    const endTime = new Date();
+    endTime.setHours(endTime.getHours() + 2);
+    
+    // 更新倒计时函数
+    function updateCountdown() {
+        const now = new Date();
+        const diff = endTime - now;
+        
+        if (diff <= 0) {
+            // 倒计时结束
+            document.getElementById('countdown').textContent = '00:00:00';
+            return;
+        }
+        
+        // 计算小时、分钟、秒
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        // 格式化时间显示
+        const formattedTime = 
+            String(hours).padStart(2, '0') + ':' +
+            String(minutes).padStart(2, '0') + ':' +
+            String(seconds).padStart(2, '0');
+        
+        document.getElementById('countdown').textContent = formattedTime;
+    }
+    
+    // 立即执行一次更新
+    updateCountdown();
+    
+    // 每秒更新一次倒计时
+    setInterval(updateCountdown, 1000);
+}
+   // 注意：以下配置仅用于开发环境，在生产环境中应移除
+if (typeof tailwind !== 'undefined') {
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#FF4D6D',
+          secondary: '#FFB6C1',
+          accent: '#FF9EBB',
+          light: '#FFF0F3',
+          dark: '#4A4A4A',
+          'primary-dark': '#D63355',
+          'bg-light': '#F9F9F9',
+          'border-light': '#EEEEEE'
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        boxShadow: {
+          'soft': '0 2px 10px rgba(0, 0, 0, 0.05)',
+          'medium': '0 4px 20px rgba(0, 0, 0, 0.08)',
+          'hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
+        },
+        animation: {
+          'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          'bounce-slow': 'bounce 2s infinite',
+        }
+      }
+    }
+  }
+}

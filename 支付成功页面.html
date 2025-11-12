@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>支付成功 - B站会员购</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .success-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 2rem;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 2;
+      stroke: #fff;
+      stroke-miterlimit: 10;
+      margin: 0 auto 20px;
+      box-shadow: inset 0px 0px 0px #78b13f;
+      animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+    
+    .checkmark__circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: #78b13f;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    
+    .checkmark__check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    @keyframes scale {
+      0%, 100% {
+        transform: none;
+      }
+      50% {
+        transform: scale3d(1.1, 1.1, 1);
+      }
+    }
+    
+    @keyframes fill {
+      100% {
+        box-shadow: inset 0px 0px 0px 30px #78b13f;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+      <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+      <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg>
+    
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">支付成功！</h1>
+    <p class="text-gray-600 mb-6">感谢您的购买，订单已成功支付。</p>
+    
+    <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+      <div class="flex justify-between mb-2">
+        <span class="text-gray-600">订单号：</span>
+        <span id="order-id" class="font-medium">加载中...</span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span class="text-gray-600">支付金额：</span>
+        <span id="amount" class="font-medium">¥0.00</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-600">支付方式：</span>
+        <span id="payment-method" class="font-medium">加载中...</span>
+      </div>
+    </div>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button onclick="goToHome()" class="bg-pink-500 hover:bg-pink-600 text-white py-3 px-6 rounded-full font-medium transition duration-300">
+        返回首页
+      </button>
+      <button onclick="viewOrder()" class="border border-pink-500 text-pink-500 hover:bg-pink-50 py-3 px-6 rounded-full font-medium transition duration-300">
+        查看订单
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 获取URL参数
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(window.location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+    
+    // 页面加载完成后显示订单信息
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取订单信息（实际项目中应该从服务器获取）
+      const orderId = getUrlParameter('orderId') || 'ORDER' + new Date().getTime();
+      const amount = getUrlParameter('amount') || '99.00';
+      const paymentMethod = getUrlParameter('paymentMethod') || '支付宝';
+      
+      // 显示订单信息
+      document.getElementById('order-id').textContent = orderId;
+      document.getElementById('amount').textContent = '¥' + amount;
+      document.getElementById('payment-method').textContent = paymentMethod;
+    });
+    
+    // 返回首页
+    function goToHome() {
+      window.location.href = './商城首页/index.html';
+    }
+    
+    // 查看订单
+    function viewOrder() {
+      const orderId = document.getElementById('order-id').textContent;
+      const amount = document.getElementById('amount').textContent.replace('¥', '');
+      const paymentMethod = document.getElementById('payment-method').textContent;
+      
+      // 跳转到订单详情页面
+      window.location.href = './订单详情页.html?orderId=' + orderId + '&amount=' + amount + '&paymentMethod=' + paymentMethod;
+    }
+  </script>
+</body>
+</html>

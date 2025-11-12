@@ -1,0 +1,257 @@
+/* 自定义工具类 */
+  .content-auto {
+    content-visibility: auto;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+  }
+  
+  .product-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+  }
+  
+  .product-image {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .product-image:hover {
+    transform: scale(1.05);
+  }
+  
+  /* 商品详情页并排布局样式 */
+  .product-detail-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  @media (min-width: 768px) {
+    .product-detail-container {
+      flex-direction: row;
+    }
+    
+    .product-image-section {
+      width: 50%;
+      padding: 1.5rem;
+    }
+    
+    .product-info-section {
+      width: 50%;
+      padding: 1.5rem;
+    }
+  }
+  
+  /* 在小屏幕上保持适当的间距 */
+  @media (max-width: 767px) {
+    .product-image-section,
+    .product-info-section {
+      padding: 1rem;
+    }
+  }
+  
+  /* 确保商品图片在容器内正确显示 */
+  .product-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* 1:1 宽高比 */
+  }
+  
+  .product-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  
+  
+  .countdown-timer {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+  }
+  
+  /* 统一按钮样式 */
+  .action-btn {
+    background-color: #fb7299;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(251, 114, 153, 0.3);
+  }
+  
+  .action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  
+  .action-btn:hover {
+    background-color: #ff5c8a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(251, 114, 153, 0.4);
+  }
+  
+  .action-btn:hover::before {
+    transform: translateX(100%);
+  }
+  
+  .action-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* 加入购物车按钮保留原有样式 */
+  .add-to-cart-btn {
+    background-color: #fb7299;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(251, 114, 153, 0.3);
+  }
+  
+  .add-to-cart-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  
+  .add-to-cart-btn:hover {
+    background-color: #ff5c8a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(251, 114, 153, 0.4);
+  }
+  
+  .add-to-cart-btn:hover::before {
+    transform: translateX(100%);
+  }
+  
+  .add-to-cart-btn:active {
+    transform: translateY(0);
+  }
+  
+  .heart-icon {
+    transition: all 0.3s ease;
+  }
+  
+  .heart-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .heart-icon.active {
+    color: #ec4899;
+  }
+  
+  .attribute-btn {
+    transition: all 0.3s ease;
+  }
+  
+  .attribute-btn:hover {
+    border-color: #ec4899;
+    color: #ec4899;
+  }
+  
+  .quantity-btn {
+    transition: all 0.3s ease;
+  }
+  
+  .quantity-btn:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .tab-button {
+    transition: all 0.3s ease;
+  }
+  
+  /* 动画类 */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .slide-in-right {
+    animation: slideInRight 0.5s ease-out;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+  }
